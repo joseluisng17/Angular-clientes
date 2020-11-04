@@ -1,0 +1,96 @@
+<ul class="alert alert-danger" *ngIf="errores?.length > 0">
+    <li *ngFor="let err of errores">
+        {{ err }}
+    </li>
+</ul>
+
+<div class="card dg-dark text white">
+    <div class="card-header">{{titulo}}</div>
+    <div class="card-body">
+
+        <!-- Utilizo el ngForm para validar que todo los campos sean llenados correctamente, hay que usar las respectivas condificonales en cada input -->
+        <form #clienteForm="ngForm">
+            <div class="form-group row">
+                <label for="nombre" class="col-form-label col-sm-2">Nombre</label>
+                <div class="col-sm-6">
+                    <!-- ngModel lo que hace es un binding = que es igual a poblar o enlazar el cliente.nombre 
+                      con el atributo que se encuentre en nuestra clase o componente.ts, por lo cual con este input
+                      podemos enviar información al componente y es en ambas direcciones por ejemplo si en la 
+                      clase o componente tien el atributo con algun valor ese valor se puede mostrar ese valor que tiene aquí en el hmtl -->
+                    <input type="text" class="form-control" [(ngModel)]="cliente.nombre" name="nombre" #nombre="ngModel">
+                    <!-- required minlength="4" -->
+                    <div class="alert alert-danger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+                        <div *ngIf="nombre.errors.required">
+                            Nombre es requerido
+                        </div>
+                        <div *ngIf="nombre.errors.minlength">
+                            Nombre debe tener almenos 4 caracteres
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="apellido" class="col-form-label col-sm-2">Apellido</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" [(ngModel)]="cliente.apellido" name="apellido" #apellido="ngModel">
+                    <!-- required -->
+                    <div class="alert alert-danger" *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)">
+                        <div *ngIf="apellido.errors.required">
+                            Apellido es requerido
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="email" class="col-form-label col-sm-2">Email</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" [(ngModel)]="cliente.email" name="email" #email="ngModel">
+                    <!--  required email -->
+                    <div class="alert alert-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
+                        <div *ngIf="email.errors.required">
+                            E-mail es requerido
+                        </div>
+                        <div *ngIf="email.errors.email">
+                            El e-mail debe tener un formato valido
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="createAt" class="col-form-label col-sm-2">Fecha</label>
+                <div class="col-sm-6">
+                    <input [matDatepicker]="miDatepicker" class="form-control" [(ngModel)]="cliente.createAt" name="createAt" style="display:inline; width:300px;">
+                    <mat-datepicker-toggle matSuffix [for]="miDatepicker"></mat-datepicker-toggle>
+                    <mat-datepicker #miDatepicker></mat-datepicker>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="region" class="col-form-label col-sm-2">Región</label>
+                <div class="col-sm-6">
+                    <!-- Usamos al directiva compareWith para cuando itere compare con el valor que tiene el usuario y la que sea igual la deje marcada la funcion compararRegion para la logia esta en form.component.ts -->
+                    <select [compareWith]="compararRegion" class="form-control" [(ngModel)]="cliente.region" name="region" style="width:500px;">
+                        <option [ngValue]="undefined">--- seleccionar una región ---</option>
+                        <option *ngFor="let region of regiones" [ngValue]="region">{{region.nombre}}</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    <!-- Utilizo un [disabel] para deshabilitar el boton y hasta que se cumplan todo los requisotos se habilita el boton -->
+                    <button class="btn btn-primary" role="button" (click)='create()' *ngIf="!cliente.id else elseBlock" [disabled]="!clienteForm.form.valid">Crear</button>
+
+                    <!-- Utilizo un template para el condicional del boton si no se cumplio la primera condicion entonces utiliza este template -->
+                    <ng-template #elseBlock>
+                        <button class="btn btn-primary" role="button" (click)='update()' [disabled]="!clienteForm.form.valid">Editar</button>
+                    </ng-template>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
